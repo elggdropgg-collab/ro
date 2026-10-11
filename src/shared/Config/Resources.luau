@@ -45,7 +45,7 @@ Resources.Kinds = {
 
 -- How many of each resource a station spawns on top of what is strictly needed.
 Resources.Spawn = {
-	Field = { DieselExtra = 3, Scrap = 10, Supplies = 5 },
+	Field = { DieselExtra = 3, Scrap = 16, Supplies = 5 },
 }
 
 Resources.SuppliesHeal = 40

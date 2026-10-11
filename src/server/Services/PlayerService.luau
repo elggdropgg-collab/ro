@@ -12,6 +12,7 @@ local State = require(ReplicatedStorage.Shared.State)
 local Signal = require(ReplicatedStorage.Shared.Util.Signal)
 local Server = ServerScriptService.Server
 local Notify = require(Server.Util.Notify)
+local GunModels = require(Server.Weapons.GunModels)
 local Registry = require(Server.Registry)
 
 local PlayerService = {}
@@ -83,6 +84,9 @@ local function setupCharacter(player: Player, character: Model, invulnerable: nu
 	light.Color = Color3.fromRGB(255, 244, 222)
 	light.Enabled = State.get("Night") ~= nil and (State.get("Night") :: number) > 0.4
 	light.Parent = head
+
+	-- Parenting the tool to the character equips it; the backpack bar is hidden on the client
+	GunModels.pistol().Parent = character
 
 	character:SetAttribute("IsPlayer", true)
 	character:SetAttribute("UserId", player.UserId)

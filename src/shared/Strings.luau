@@ -70,6 +70,10 @@ local T: { [string]: { ru: string, en: string } } = {
 		ru = "Дизель {1}/{2}. Найдите топливо, чтобы уехать",
 		en = "Diesel {1}/{2}. Find fuel to move on",
 	},
+	Hint_CanRecruit = {
+		ru = "Дизель {1}/{2}. Металла хватает на бойца — терминал найма в штабе",
+		en = "Diesel {1}/{2}. Enough scrap for a soldier — recruit terminal in the HQ",
+	},
 	Hint_ReadyToDepart = {
 		ru = "Топлива хватает. Командир даёт отправление рычагом в локомотиве",
 		en = "Enough fuel. The commander pulls the lever in the locomotive",
@@ -160,6 +164,10 @@ local T: { [string]: { ru: string, en: string } } = {
 	},
 	Notify_Recruited = { ru = "Новый боец: {1}", en = "New recruit: {1}" },
 	Notify_NotEnoughScrap = { ru = "Не хватает металла", en = "Not enough scrap" },
+	Notify_NoSquad = {
+		ru = "Отряда нет. Несите металл в поезд: {1} металла — один боец",
+		en = "No squad. Bring scrap to the train: {1} scrap per soldier",
+	},
 	Notify_SquadFull = { ru = "Отряд укомплектован", en = "Squad is full" },
 	Notify_Upgraded = { ru = "Оружие улучшено: уровень {1}", en = "Weapon upgraded: level {1}" },
 	Notify_NotEnoughCoins = {

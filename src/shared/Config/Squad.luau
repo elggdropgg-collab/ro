@@ -3,11 +3,10 @@
 
 local Squad = {}
 
-Squad.BaseSize = 3
-Squad.PerPlayer = 2
+-- The run starts with no soldiers: players haul scrap to the train and recruit them.
 Squad.MaxSize = 16
 Squad.ExtraSquadSize = 4
-Squad.RecruitScrapCost = 4
+Squad.RecruitScrapCost = 2
 
 Squad.Orders = {
 	Follow = "Follow",
@@ -21,28 +20,33 @@ Squad.Orders = {
 
 Squad.MaxRouteWaypoints = 32
 
+-- Assault rifles fire in bursts: BurstSize shots FireInterval apart, then BurstPause.
 Squad.Kinds = {
 	Regular = {
 		MaxHealth = 100,
 		WalkSpeed = 13,
 		RunSpeed = 19,
-		Ammo = 24,
-		Damage = 12,
-		StunPower = 6,
-		FireInterval = 0.55,
+		Ammo = 48,
+		Damage = 7,
+		StunPower = 3.5,
+		FireInterval = 0.1,
+		BurstSize = 4,
+		BurstPause = { 0.75, 1.1 },
 		Range = 85,
-		SpreadDegrees = 2.4,
+		SpreadDegrees = 2.8,
 	},
 	Super = {
 		MaxHealth = 450,
 		WalkSpeed = 17,
 		RunSpeed = 21,
 		Ammo = math.huge,
-		Damage = 38,
-		StunPower = 30,
-		FireInterval = 0.18,
+		Damage = 30,
+		StunPower = 24,
+		FireInterval = 0.09,
+		BurstSize = 8,
+		BurstPause = { 0.4, 0.6 },
 		Range = 140,
-		SpreadDegrees = 1.2,
+		SpreadDegrees = 1.4,
 	},
 }
 
@@ -55,7 +59,7 @@ Squad.WanderRadius = 110
 Squad.GatherSearchRadius = 220
 Squad.FollowSpacing = 5
 Squad.PanicDistance = 28
-Squad.AmmoRefillPerSupply = 36
+Squad.AmmoRefillPerSupply = 48
 
 Squad.CarrySpeedMultiplier = 0.8
 
@@ -97,6 +101,7 @@ Squad.Animations = {
 	Idle = "rbxassetid://507766388",
 	Walk = "rbxassetid://507777826",
 	Run = "rbxassetid://507767714",
+	Hold = "rbxassetid://507768375", -- R15 "toolnone": right arm raised, weapon forward
 }
 
 -- Optional classic clothing. 0 = use flat uniform colours.

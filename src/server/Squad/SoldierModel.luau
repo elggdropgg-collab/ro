@@ -1,10 +1,11 @@
--- Builds a soldier: R15 body from a HumanoidDescription plus helmet, vest, pack and a rifle
--- with an underbarrel flashlight. Super soldiers wear black with glowing visors.
+-- Builds a soldier: R15 body from a HumanoidDescription plus helmet, vest, pack and an assault
+-- rifle with an underbarrel flashlight. Super soldiers wear black with glowing visors.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local SquadConfig = require(ReplicatedStorage.Shared.Config.Squad)
+local GunModels = require(script.Parent.Parent.Weapons.GunModels)
 
 local SoldierModel = {}
 
@@ -14,7 +15,6 @@ export type Rig = {
 	Root: BasePart,
 	Muzzle: Attachment,
 	Light: SpotLight,
-	Gunshot: Sound,
 }
 
 local function gear(
@@ -184,27 +184,10 @@ function SoldierModel.build(kind: string, displayName: string, rng: Random): Rig
 		Enum.Material.Plastic
 	)
 
-	-- Rifle along the hand's forward axis
-	local metal = Color3.fromRGB(34, 34, 36)
-	local body = gear(model, hand, CFrame.new(0, -0.25, -0.7), Vector3.new(0.22, 0.34, 2.3), metal, Enum.Material.Metal)
-	body.Name = "Rifle"
-	gear(model, body, CFrame.new(0, 0.02, -1.6), Vector3.new(0.1, 0.1, 1.1), metal, Enum.Material.Metal)
-	gear(model, body, CFrame.new(0, -0.38, -0.2), Vector3.new(0.16, 0.6, 0.32), metal, Enum.Material.Metal)
-	gear(
-		model,
-		body,
-		CFrame.new(0, -0.1, 1.3),
-		Vector3.new(0.18, 0.42, 0.7),
-		Color3.fromRGB(60, 48, 36),
-		Enum.Material.Wood
-	)
-	local lamp =
-		gear(model, body, CFrame.new(0, -0.2, -1.05), Vector3.new(0.16, 0.16, 0.35), metal, Enum.Material.Metal)
-
-	local muzzle = Instance.new("Attachment")
-	muzzle.Name = "Muzzle"
-	muzzle.Position = Vector3.new(0, 0.02, -2.2)
-	muzzle.Parent = body
+	-- Assault rifle in the right hand; the Hold animation (Squad.Animations) raises it
+	local rifle = GunModels.rifle(super)
+	GunModels.mount(rifle, model, hand)
+	local muzzle = rifle.Muzzle
 
 	local light = Instance.new("SpotLight")
 	light.Face = Enum.NormalId.Front
@@ -214,14 +197,7 @@ function SoldierModel.build(kind: string, displayName: string, rng: Random): Rig
 	light.Shadows = true
 	light.Color = if super then Color3.fromRGB(200, 235, 255) else Color3.fromRGB(255, 238, 210)
 	light.Enabled = false
-	light.Parent = lamp
-
-	local gunshot = Instance.new("Sound")
-	gunshot.Name = "Gunshot"
-	gunshot.RollOffMinDistance = 12
-	gunshot.RollOffMaxDistance = 400
-	gunshot.Volume = 0.9
-	gunshot.Parent = body
+	light.Parent = rifle.Lamp
 
 	-- Name tag
 	local tag = Instance.new("BillboardGui")
@@ -254,7 +230,6 @@ function SoldierModel.build(kind: string, displayName: string, rng: Random): Rig
 		Root = root,
 		Muzzle = muzzle,
 		Light = light,
-		Gunshot = gunshot,
 	}
 end
 

@@ -4,6 +4,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
+local SquadConfig = require(ReplicatedStorage.Shared.Config.Squad)
 local State = require(ReplicatedStorage.Shared.State)
 local Server = ServerScriptService.Server
 local Builder = require(Server.World.Builder)
@@ -281,7 +282,9 @@ local function buildHQ(parent: Instance)
 		Color3.fromRGB(220, 170, 80),
 		"RecruitTerminal"
 	)
-	Builder.prompt(recruit, "Prompt_Recruit", "Prompt_Terminal", 0.6).Triggered:Connect(function(player)
+	local recruitPrompt = Builder.prompt(recruit, "Prompt_Recruit", "Resource_Scrap", 0.6)
+	recruitPrompt:SetAttribute("ObjectArg", SquadConfig.RecruitScrapCost)
+	recruitPrompt.Triggered:Connect(function(player)
 		Registry.SquadService:Recruit(player)
 	end)
 

@@ -47,13 +47,46 @@ mkdir types; Invoke-WebRequest https://raw.githubusercontent.com/JohnnyMorganz/l
 
 ## 4. Звуки
 
-1. Подготовьте файлы по [SOUND_DESIGN.md](SOUND_DESIGN.md).
-2. Загрузите их: Creator Hub → **Creations → Audio**, или **Asset Manager** в Studio.
-3. Вставьте ID в `src/shared/Config/Sounds.luau`:
-   ```lua
-   BoneCrunch = { "rbxassetid://1111", "rbxassetid://2222", "rbxassetid://3333" },
+Звуки берутся из двух мест и складываются в один слот (`src/shared/Config/Sounds.luau`):
+
+- **Библиотека Roblox** (Pro Sound Effects и APM). Лицензированы Roblox для любых игр, загружать
+  не нужно — ID уже вписаны. Найти ещё: `.\tools\find-sounds.ps1 "bone crack"`.
+- **Свои записи** из папки `Звуки/`. Скрипт режет их на отдельные звуки в `assets/sounds/<Слот>/`:
+  ```powershell
+  winget install Gyan.FFmpeg      # один раз
+  .\tools\cut-sounds.ps1
+  ```
+  Точки нарезки — в начале скрипта. Свои записи нужно **загрузить на ваш аккаунт** (ниже).
+
+### Загрузка своих звуков (один раз, ~2 минуты)
+
+1. [create.roblox.com/dashboard/credentials](https://create.roblox.com/dashboard/credentials) →
+   **Create API Key**. Имя любое. **Access Permissions → Assets** → `asset:read` и `asset:write`.
+   **Accepted IP Addresses** → `0.0.0.0/0`, **Expiration** → 7 дней. Сохраните ключ (показывается
+   один раз) и никому его не отправляйте; после загрузки ключ можно удалить там же.
+2. Ваш User ID — число в адресе вашего профиля: `roblox.com/users/<ЧИСЛО>/profile`.
+3. В терминале проекта:
+   ```powershell
+   $env:ROBLOX_API_KEY = "сюда-ключ"
+   .\tools\upload-sounds.ps1 -UserId <ЧИСЛО>
    ```
-Пустые слоты просто молчат: игра работает и без звуков.
+   Скрипт загрузит все `.ogg` из `assets/sounds`, запомнит их в `assets/sounds/uploaded.json`
+   (повторный запуск грузит только новые) и сам впишет ID в `src/shared/Config/UploadedSounds.luau`.
+   Если игра принадлежит группе — `-GroupId <id группы>` вместо `-UserId`.
+
+Без ключа можно вручную: Creator Hub → **Creations → Audio → Upload Asset**, затем ID вписать в
+`UploadedSounds.luau` в том же формате: `ScreamAgony = { "rbxassetid://123", "rbxassetid://456" },`.
+
+Roblox проверяет каждый звук модерацией (от минут до суток). Пока звук на проверке или отклонён,
+он просто молчит, игра не ломается. Лимит — около 100 загрузок аудио в месяц для аккаунта с
+подтверждённым ID.
+
+### Что ещё стоит записать самим
+
+Слоты `RadioVoiceContact` («Контакт!», «Оно здесь!»), `RadioVoiceLost` («Новак? Новак, ответь!»)
+и `TrainBrakes` пусты: подходящих фраз и тормозов поезда в библиотеке нет. Запишите голос
+(можно на телефон), положите `.ogg`/`.mp3` в `assets/sounds/RadioVoiceContact/` и т.д.,
+запустите `upload-sounds.ps1`. Пустые слоты просто молчат.
 
 Картинки для скримера: `src/shared/Config/Visuals.luau` → `ScareImages = { "rbxassetid://..." }`.
 Пока список пуст, используется процедурное лицо.
@@ -77,6 +110,15 @@ mkdir types; Invoke-WebRequest https://raw.githubusercontent.com/JohnnyMorganz/l
    - атрибуты (необязательно) `GripHeight`, `GripDistance`, `GripTilt` — как держать жертву.
 
 Папка `Assets` не управляется Rojo, её не перезапишет синхронизация.
+
+### Оружие
+
+Пистолет игрока и автомат бойцов собраны из деталей кодом (`src/server/Weapons/GunModels.luau`).
+Заменить на свои модели:
+- `ReplicatedStorage/Assets/Weapons/Pistol` — **Tool** с частью `Handle` и `Attachment` с именем
+  `Muzzle` на конце ствола. Хват — по `Tool.Grip`, как у любого Roblox-инструмента.
+- `ReplicatedStorage/Assets/Weapons/Rifle` — **Model** с `PrimaryPart` в месте хвата (ствол вдоль −Z,
+  верх +Y), `Attachment` `Muzzle` на дульном срезе и, по желанию, частью `Lamp` для фонаря.
 
 ## 7. Освещение и terrain
 

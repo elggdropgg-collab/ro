@@ -8,6 +8,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
+local Sounds = require(ReplicatedStorage.Shared.Config.Sounds)
 local Net = require(ReplicatedStorage.Shared.Net)
 local State = require(ReplicatedStorage.Shared.State)
 local Lang = require(script.Parent.Parent.Lang)
@@ -70,10 +71,19 @@ local function flicker(part: BasePart)
 	end)
 end
 
-local function tracer(origin: Vector3, hit: Vector3, kind: string)
+local function tracer(origin: Vector3, hit: Vector3, kind: string, shooterUserId: number?)
 	local length = (hit - origin).Magnitude
 	if length < 0.5 then
 		return
+	end
+	-- The local player's own shot already played its sound and flash in InputController
+	local mine = shooterUserId == player.UserId
+	local camera = workspace.CurrentCamera
+	local audible = camera ~= nil and (camera.Focus.Position - origin).Magnitude < Sounds.WorldMaxDistance
+	if kind == "Pistol" and not mine and audible then
+		Registry.AudioController:PlayAt("PistolShot", origin, 1, math.random(95, 105) / 100)
+	elseif kind ~= "Pistol" and audible then
+		Registry.AudioController:PlayAt("RifleShot", origin, 0.9, math.random(94, 106) / 100)
 	end
 	local color = if kind == "Super" then Color3.fromRGB(150, 220, 255) else Color3.fromRGB(255, 214, 150)
 	local beam = Instance.new("Part")
@@ -100,13 +110,6 @@ local function tracer(origin: Vector3, hit: Vector3, kind: string)
 	light.Brightness = 4
 	light.Parent = flash
 	Debris:AddItem(flash, 0.06)
-
-	if kind == "Pistol" then
-		local head = player.Character and player.Character:FindFirstChild("Head") :: BasePart?
-		if not head or (head.Position - origin).Magnitude > 3 then
-			Registry.AudioController:PlayAt("PistolShot", origin, 1, math.random(95, 105) / 100)
-		end
-	end
 end
 
 local function spawnScenery()

@@ -5,6 +5,7 @@ local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
 local UserInputService = game:GetService("UserInputService")
 
 local GameConfig = require(ReplicatedStorage.Shared.Config.Game)
@@ -103,11 +104,13 @@ local function fire(useCentre: boolean)
 	Net.event("Fire"):FireServer(target)
 	if head then
 		Registry.AudioController:PlayAt("PistolShot", head, 1, math.random(96, 104) / 100)
+		local pistol = c:FindFirstChild("Pistol")
+		local muzzle = pistol and pistol:FindFirstChild("Muzzle", true)
 		local flash = Instance.new("PointLight")
 		flash.Color = Color3.fromRGB(255, 210, 150)
 		flash.Range = 16
 		flash.Brightness = 5
-		flash.Parent = head
+		flash.Parent = if muzzle and muzzle:IsA("Attachment") then muzzle else head
 		task.delay(0.05, function()
 			flash:Destroy()
 		end)
@@ -210,6 +213,10 @@ end
 
 function InputController:Start()
 	bind()
+	-- The pistol is always in hand: no hotbar, no unequipping
+	pcall(function()
+		StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+	end)
 
 	RunService.RenderStepped:Connect(function(dt)
 		local c, humanoid, root = character()

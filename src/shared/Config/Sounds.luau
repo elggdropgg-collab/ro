@@ -23,66 +23,90 @@ export type Recipe = {
 	DuckAmbient: boolean?,
 }
 
+local Uploaded = require(script.Parent.UploadedSounds)
+
+local function ids(...: number): { string }
+	local list = {}
+	for _, id in { ... } do
+		table.insert(list, `rbxassetid://{id}`)
+	end
+	return list
+end
+
+-- Library IDs come from Roblox's licensed Pro Sound Effects and APM catalogues (free to use in
+-- any experience; find more with tools/find-sounds.ps1). Our own recordings in assets/sounds
+-- are uploaded by tools/upload-sounds.ps1 and merged in below.
 local Library: { [string]: { string } } = {
 	-- Victim voice
-	ScreamAgony = {}, -- long, rough, breaking scream of a man being torn apart
-	ScreamPanic = {}, -- short "NO! NO!" type panic shouts
-	ScreamChoked = {}, -- scream cut off by blood in the throat
-	Gurgle = {}, -- wet breathing / drowning in blood
-	DyingBreath = {}, -- last rattling exhale
-	Whimper = {}, -- quiet crying, begging
+	ScreamAgony = ids(9116454870, 9116454942, 9116454961, 9116455473, 9116455235, 9116455270), -- long, rough, breaking scream of a man being torn apart
+	ScreamPanic = ids(9125652432, 9125652466, 9125652949, 9125652443, 9125651079), -- short "NO! NO!" type panic shouts
+	ScreamChoked = ids(9113800064, 9113799288, 9114554185), -- scream cut off by blood in the throat
+	Gurgle = ids(9120005520, 9113607285, 9113607822, 9114553939, 9114554180), -- wet breathing / drowning in blood
+	DyingBreath = ids(9114030325, 9114030468, 9114030538, 9114029940, 9114556462), -- last rattling exhale
+	Whimper = ids(9113997425, 9113996923, 9113996266, 9113996672, 9113996278), -- quiet crying, begging
 
 	-- Body
-	BoneCrunch = {}, -- dense snaps: ribs, limbs
-	BoneGrind = {}, -- slow grinding twist of a joint
-	FleshTear = {}, -- wet ripping of skin and muscle
-	WetSquelch = {}, -- hands / jaws inside a body
-	BloodSplatter = {}, -- liquid hitting dirt and wheat
-	BloodDrip = {}, -- slow drips, loopable
-	BodyDrop = {}, -- heavy limp body hitting the ground
-	ClothRip = {}, -- uniform being torn
+	BoneCrunch = ids(9113540932, 9113540587, 9113542386, 9113542363, 9113546532, 9119559518, 9119559825), -- dense snaps: ribs, limbs
+	BoneGrind = ids(9119560180, 9119559740, 9119558965, 9119559515, 9113734831), -- slow grinding twist of a joint
+	FleshTear = ids(9114487557), -- wet ripping of skin and muscle
+	WetSquelch = ids(9114447775, 9114631768), -- hands / jaws inside a body
+	BloodSplatter = ids(9114741191, 9114741340, 9114741339, 9113464573, 9113464577), -- liquid hitting dirt and wheat
+	BloodDrip = ids(9113464190, 9113464198, 9113463629, 9113463758), -- slow drips, loopable
+	BodyDrop = ids(9113470020, 9113470969, 9113469292, 9113475819, 9113477342), -- heavy limp body hitting the ground
+	ClothRip = ids(9113835765, 9113836102, 9113836369, 9113827650, 9113828679), -- uniform being torn
 
 	-- Monsters
-	ScarecrowCreak = {}, -- dry wood and straw creaking
-	ScarecrowBreath = {}, -- muffled breathing inside a burlap sack
-	ScarecrowLurch = {}, -- fast rustle of straw when it moves unseen
-	HuskClick = {}, -- echolocation clicks
-	HuskShriek = {}, -- attack shriek
-	MonsterChew = {}, -- rhythmic chewing that goes on after the screams stop
-	MonsterGrowlLow = {}, -- sub-heavy growl while feeding
+	ScarecrowCreak = ids(9120839010, 9120839174, 9120839364, 9126263691, 9125407239), -- dry wood and straw creaking
+	ScarecrowBreath = ids(9113983944, 9113984054, 9113984056), -- muffled breathing inside a burlap sack
+	ScarecrowLurch = ids(9114518560, 9114518077, 9114518070, 9114518245), -- fast rustle of straw when it moves unseen
+	HuskClick = ids(9126135650, 9126135440, 9126135811, 9126136331, 9120442381), -- echolocation clicks
+	HuskShriek = ids(9125474863, 9125474518, 9125474560, 9125475139, 9125478014), -- attack shriek
+	MonsterChew = ids(9113991729, 9113991859), -- rhythmic chewing that goes on after the screams stop
+	MonsterGrowlLow = ids(9113971433, 9113971531, 9113972334, 9114628321, 9114628818, 9113980319), -- sub-heavy growl while feeding
 
 	-- Radio
-	RadioKeyUp = {}, -- push-to-talk click
+	RadioKeyUp = ids(9120456889, 9120456241, 9119730203), -- push-to-talk click
 	RadioKeyDown = {}, -- release click + squelch tail
-	RadioStatic = {}, -- static bursts
+	RadioStatic = ids(9118026602, 9118027586, 9117158538), -- static bursts
 	RadioVoiceContact = {}, -- "Contact!", "It's here!"
-	RadioVoiceGrabbed = {}, -- "It's got me! Help!"
+	RadioVoiceGrabbed = ids(9125653237, 9125653241, 9125651857), -- "It's got me! Help!"
 	RadioVoiceLost = {}, -- "Where is he?", "Novak? Novak!"
+	RadioSquadAttacked = {}, -- whole fight heard over the radio: burst, scream, hit, scream, crunch
 
 	-- Weapons
-	RifleShot = {},
-	PistolShot = {},
-	PistolDry = {},
-	PistolReload = {},
+	RifleShot = ids(9114726684, 9114727096, 9114729252, 9114729298, 9114727430),
+	PistolShot = ids(9117399029, 9117399285, 9117402631, 9117398126, 9117400892),
+	PistolDry = ids(9119717523),
+	PistolReload = ids(9113104176, 9113104208, 9113104337),
 
 	-- Player feedback
-	Heartbeat = {},
+	Heartbeat = ids(9043365842),
 	Tinnitus = {},
-	ScareStinger = {},
-	Whisper = {},
-	FootstepWheat = {},
-	FootstepHeavy = {},
+	ScareStinger = ids(9047014318, 9047014546, 9047014561, 9125404320),
+	Whisper = ids(9126213995, 9126213744, 9126214616, 9126214321, 9114228524),
+	FootstepWheat = ids(9114518077, 9114518070, 9114518245),
+	FootstepHeavy = ids(9114523345, 9118686853, 9118688024, 9118768193),
 
 	-- Ambience (looped)
-	AmbientFieldWind = {},
-	AmbientFieldCrickets = {},
-	AmbientNight = {},
-	AmbientTrainInterior = {},
-	TrainRolling = {},
-	TrainHorn = {},
+	AmbientFieldWind = ids(9113286969, 9114057128),
+	AmbientFieldCrickets = ids(9112764546, 9112764558, 9112764573),
+	AmbientNight = ids(9112835862, 9112836038, 9112835836),
+	AmbientTrainInterior = ids(9113117328, 9113116638),
+	TrainRolling = ids(9114075238, 9116330488),
+	TrainHorn = ids(9120248414, 9120249206),
 	TrainBrakes = {},
-	PortalHum = {},
+	PortalHum = ids(9125566998, 9125566994, 9114031637),
 }
+
+-- Our own recordings are extra variants on top of the library ones
+for slot, list in Uploaded do
+	local merged = table.clone(list)
+	local existing: { string } = Library[slot] or {}
+	for _, id in existing do
+		table.insert(merged, id)
+	end
+	Library[slot] = merged
+end
 
 local Recipes: { [string]: Recipe } = {
 	-- Arc: surprise -> begging -> peak of pain -> scream cut by crunch -> choking -> silence -> it is still eating.
@@ -94,6 +118,7 @@ local Recipes: { [string]: Recipe } = {
 			{ Slot = "ScreamPanic", At = 0.05, Volume = 1, Pitch = { 0.95, 1.05 } },
 			{ Slot = "RadioKeyUp", At = 0.1, Channel = "Radio" },
 			{ Slot = "RadioVoiceGrabbed", At = 0.2, Channel = "Radio", Pitch = { 0.97, 1.03 } },
+			{ Slot = "RadioSquadAttacked", At = 0.35, Channel = "Radio", Volume = 0.9, Pitch = { 0.96, 1.04 } },
 			{ Slot = "ClothRip", At = 0.7, Volume = 0.8 },
 			{ Slot = "ScreamAgony", At = 0.9, Volume = 1, Pitch = { 0.92, 1.04 } },
 			{ Slot = "ScreamAgony", At = 1.0, Volume = 1, Pitch = { 0.9, 1 }, Channel = "Radio" },
@@ -127,6 +152,7 @@ local Recipes: { [string]: Recipe } = {
 			{ Slot = "ScreamPanic", At = 0.15, Volume = 1, Pitch = { 0.95, 1.06 } },
 			{ Slot = "RadioKeyUp", At = 0.2, Channel = "Radio" },
 			{ Slot = "RadioVoiceGrabbed", At = 0.3, Channel = "Radio" },
+			{ Slot = "RadioSquadAttacked", At = 0.4, Channel = "Radio", Volume = 0.9, Pitch = { 0.96, 1.04 } },
 			{ Slot = "FleshTear", At = 0.6, Volume = 1, Pitch = { 0.95, 1.1 } },
 			{ Slot = "ScreamAgony", At = 0.8, Volume = 1, Pitch = { 0.95, 1.08 } },
 			{ Slot = "ScreamAgony", At = 0.9, Volume = 1, Channel = "Radio" },
@@ -152,10 +178,11 @@ local Recipes: { [string]: Recipe } = {
 	},
 	-- A soldier abandoned outside when the train leaves.
 	LeftBehind = {
-		Duration = 5,
+		Duration = 7,
 		Layers = {
 			{ Slot = "RadioKeyUp", At = 0, Channel = "Radio" },
 			{ Slot = "RadioVoiceLost", At = 0.1, Channel = "Radio" },
+			{ Slot = "RadioSquadAttacked", At = 1.0, Channel = "Radio", Volume = 0.8 },
 			{ Slot = "ScreamPanic", At = 1.4, Channel = "Radio" },
 			{ Slot = "ScreamAgony", At = 2.2, Channel = "Radio" },
 			{ Slot = "RadioStatic", At = 3.6, Channel = "Radio" },

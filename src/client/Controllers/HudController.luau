@@ -11,6 +11,7 @@ local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
 local Resources = require(ReplicatedStorage.Shared.Config.Resources)
+local SquadConfig = require(ReplicatedStorage.Shared.Config.Squad)
 local Net = require(ReplicatedStorage.Shared.Net)
 local State = require(ReplicatedStorage.Shared.State)
 local Lang = require(script.Parent.Parent.Lang)
@@ -54,6 +55,9 @@ local function hintText(): string
 		local pool, needed = State.get("DieselPool") or 0, State.get("DieselNeeded") or 0
 		if pool >= needed then
 			return Lang.t("Hint_ReadyToDepart")
+		end
+		if (State.get("SquadAlive") or 0) == 0 and (State.get("ScrapPool") or 0) >= SquadConfig.RecruitScrapCost then
+			return Lang.t("Hint_CanRecruit", { pool, needed })
 		end
 		return Lang.t("Hint_FindDiesel", { pool, needed })
 	elseif phase == "Departing" then

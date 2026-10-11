@@ -245,26 +245,20 @@ local function buildStatic()
 			Parent = staticLayer,
 		})
 		local green = Color3.fromRGB(40, 150, 90)
-		Theme.new(
-			"Frame",
-			{
-				Size = UDim2.new(1, 0, 0, 4),
-				Position = UDim2.new(0, 0, 0.5, -2),
-				BackgroundColor3 = green,
-				BorderSizePixel = 0,
-				Parent = holder,
-			}
-		)
-		Theme.new(
-			"Frame",
-			{
-				Size = UDim2.new(0, 4, 1, 0),
-				Position = UDim2.new(0.5, -2, 0, 0),
-				BackgroundColor3 = green,
-				BorderSizePixel = 0,
-				Parent = holder,
-			}
-		)
+		Theme.new("Frame", {
+			Size = UDim2.new(1, 0, 0, 4),
+			Position = UDim2.new(0, 0, 0.5, -2),
+			BackgroundColor3 = green,
+			BorderSizePixel = 0,
+			Parent = holder,
+		})
+		Theme.new("Frame", {
+			Size = UDim2.new(0, 4, 1, 0),
+			Position = UDim2.new(0.5, -2, 0, 0),
+			BackgroundColor3 = green,
+			BorderSizePixel = 0,
+			Parent = holder,
+		})
 	end
 end
 
@@ -487,11 +481,13 @@ local function openSub(title: string, entries: { { Text: string, Action: () -> (
 			end
 		)
 	end
-	Theme.button(
-		{ Text = Lang.t("Menu_Back"), TextSize = 14, Size = UDim2.new(1, 0, 0, 30), LayoutOrder = 99, Parent = subPanel },
-		"Dossier",
-		closeSub
-	)
+	Theme.button({
+		Text = Lang.t("Menu_Back"),
+		TextSize = 14,
+		Size = UDim2.new(1, 0, 0, 30),
+		LayoutOrder = 99,
+		Parent = subPanel,
+	}, "Dossier", closeSub)
 end
 
 local function issue(order: string)

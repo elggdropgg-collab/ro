@@ -96,12 +96,14 @@ function CombatService:Fire(
 	damage: number,
 	stun: number,
 	kind: string,
-	source: any
+	source: any,
+	visualOrigin: Vector3?
 ): RaycastResult?
 	local params = shotParams()
 	local result = workspace:Raycast(origin, direction.Unit * range, params)
 	local hitPosition = if result then result.Position else origin + direction.Unit * range
-	tracerRemote:FireAllClients(origin, hitPosition, kind)
+	local shooter = if typeof(source) == "Instance" and source:IsA("Player") then source.UserId else nil
+	tracerRemote:FireAllClients(visualOrigin or origin, hitPosition, kind, shooter)
 	Registry.MonsterService:EmitNoise(origin, MonsterConfig.Noise.Gunshot)
 	if result then
 		local monster = Registry.MonsterService:GetByPart(result.Instance)
@@ -140,6 +142,9 @@ function CombatService:PlayerFire(player: Player, aimPoint: Vector3)
 	lastShot[player] = now
 	player:SetAttribute("Ammo", ammo - 1)
 	local level = Weapons.Levels[math.clamp((player:GetAttribute("WeaponLevel") or 1) :: number, 1, #Weapons.Levels)]
+	-- Aim is traced from the head (what the camera sees); the tracer starts at the barrel
+	local pistol = character:FindFirstChild("Pistol")
+	local muzzle = pistol and pistol:FindFirstChild("Muzzle", true)
 	self:Fire(
 		origin,
 		spread(toAim.Unit, Weapons.SpreadDegrees),
@@ -147,7 +152,8 @@ function CombatService:PlayerFire(player: Player, aimPoint: Vector3)
 		level.Damage,
 		level.Stun,
 		"Pistol",
-		player
+		player,
+		if muzzle and muzzle:IsA("Attachment") then muzzle.WorldPosition else nil
 	)
 end
 

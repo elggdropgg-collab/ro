@@ -1,8 +1,13 @@
 -- Server-side locomotion animations for NPC humanoids (idle / walk / run by speed).
+-- An optional Hold animation plays on top of everything, e.g. to keep a weapon raised.
 
 local NpcAnimator = {}
 
-function NpcAnimator.attach(humanoid: Humanoid, ids: { Idle: string, Walk: string, Run: string }, runThreshold: number)
+function NpcAnimator.attach(
+	humanoid: Humanoid,
+	ids: { Idle: string, Walk: string, Run: string, Hold: string? },
+	runThreshold: number
+)
 	local animator = humanoid:FindFirstChildOfClass("Animator") or Instance.new("Animator")
 	animator.Parent = humanoid
 
@@ -15,8 +20,13 @@ function NpcAnimator.attach(humanoid: Humanoid, ids: { Idle: string, Walk: strin
 		end)
 		if ok and track then
 			track.Looped = true
-			track.Priority = Enum.AnimationPriority.Core
-			tracks[name] = track
+			if name == "Hold" then
+				track.Priority = Enum.AnimationPriority.Action
+				track:Play(0)
+			else
+				track.Priority = Enum.AnimationPriority.Core
+				tracks[name] = track
+			end
 		end
 	end
 

@@ -208,8 +208,7 @@ function MatchService:RunMatch(): string
 
 	setPhase("Vote")
 	Registry.CommanderService:RunVote(participants)
-	local size = math.min(SquadConfig.BaseSize + SquadConfig.PerPlayer * #participants, SquadConfig.MaxSize)
-	Registry.SquadService:CreateSquad(size)
+	Registry.SquadService:ClearAll()
 
 	for index, name in GameConfig.Locations do
 		self:Travel(index, name)
@@ -269,6 +268,9 @@ function MatchService:Travel(index: number, name: string)
 	Registry.ReviveService:BuildFromLayout(layout)
 	Registry.MonsterService:SpawnForLocation(layout, name == "Finale")
 	Registry.AudioService:SetAmbient(name)
+	if name ~= "Finale" and Registry.SquadService:GetAliveCount() == 0 then
+		Notify.all("Notify_NoSquad", { SquadConfig.RecruitScrapCost }, "radio")
+	end
 	local commander = Registry.CommanderService:GetCommander()
 	if not commander or not Registry.PlayerService:IsAlive(commander) then
 		local alive = aliveParticipants()

@@ -7,7 +7,6 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local GameConfig = require(ReplicatedStorage.Shared.Config.Game)
 local Resources = require(ReplicatedStorage.Shared.Config.Resources)
 local SquadConfig = require(ReplicatedStorage.Shared.Config.Squad)
-local Sounds = require(ReplicatedStorage.Shared.Config.Sounds)
 local State = require(ReplicatedStorage.Shared.State)
 local Server = ServerScriptService.Server
 local Mover = require(Server.Util.Mover)
@@ -37,7 +36,6 @@ function Soldier.new(id: number, kind: string, name: string, cframe: CFrame, par
 		Root = rig.Root,
 		Muzzle = rig.Muzzle,
 		Light = rig.Light,
-		Gunshot = rig.Gunshot,
 		Mover = nil :: any,
 		Alive = true,
 		Grabbed = false,
@@ -45,6 +43,8 @@ function Soldier.new(id: number, kind: string, name: string, cframe: CFrame, par
 		OrderData = {} :: { [string]: any },
 		Ammo = stats.Ammo,
 		LastShot = 0,
+		BurstLeft = stats.BurstSize,
+		NextBurst = 0,
 		LastContact = 0,
 		Slot = id,
 		WanderGoal = nil :: Vector3?,
@@ -67,11 +67,6 @@ function Soldier.new(id: number, kind: string, name: string, cframe: CFrame, par
 	pcall(function()
 		self.Root:SetNetworkOwner(nil)
 	end)
-
-	local shot = Sounds.Library.RifleShot
-	if #shot > 0 then
-		self.Gunshot.SoundId = shot[rng:NextInteger(1, #shot)]
-	end
 
 	NpcAnimator.attach(self.Humanoid, SquadConfig.Animations, (stats.WalkSpeed + stats.RunSpeed) / 2)
 	self.Mover = Mover.new(self.Humanoid, self.Root)
@@ -182,19 +177,21 @@ end
 
 function Soldier:Shoot(_monster: any, aim: Vector3)
 	local now = os.clock()
-	if now - self.LastShot < self.Stats.FireInterval or self.Ammo <= 0 then
+	local stats = self.Stats
+	if now < self.NextBurst or now - self.LastShot < stats.FireInterval or self.Ammo <= 0 then
 		return
 	end
 	self.LastShot = now
+	self.BurstLeft -= 1
+	if self.BurstLeft <= 0 then
+		self.BurstLeft = stats.BurstSize + self.Rng:NextInteger(-1, 1)
+		self.NextBurst = now + self.Rng:NextNumber(stats.BurstPause[1], stats.BurstPause[2])
+	end
 	if self.Ammo ~= math.huge then
 		self.Ammo -= 1
 	end
 	self.Humanoid.AutoRotate = false
 	self.Root.CFrame = CFrame.lookAt(self.Root.Position, Vector3.new(aim.X, self.Root.Position.Y, aim.Z))
-	if self.Gunshot.SoundId ~= "" then
-		self.Gunshot.PlaybackSpeed = self.Rng:NextNumber(0.94, 1.06)
-		self.Gunshot:Play()
-	end
 	Registry.CombatService:SoldierFire(self, aim)
 	self.Model:SetAttribute("Ammo", self.Ammo)
 end

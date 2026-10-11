@@ -134,11 +134,6 @@ function SquadService:AddSoldiers(
 	return created
 end
 
-function SquadService:CreateSquad(count: number)
-	self:ClearAll()
-	self:AddSoldiers(count)
-end
-
 function SquadService:ClearAll()
 	generation += 1
 	for _, soldier in soldiers do
