@@ -1,0 +1,13 @@
+# Roblox place files built locally
+*.rbxl
+*.rbxlx
+*.rbxl.lock
+*.rbxlx.lock
+
+# Rojo / luau-lsp generated
+sourcemap.json
+/types/
+
+# OS / editor
+.DS_Store
+Thumbs.db

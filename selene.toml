@@ -1,0 +1,5 @@
+std = "roblox"
+
+[lints]
+shadowing = "allow"
+roblox_manual_fromscale_or_fromoffset = "allow"
